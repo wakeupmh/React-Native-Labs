@@ -3,21 +3,29 @@ import { View, FlatList } from 'react-native';
 
 import { Post } from './styles'
 
-export default function Feed() {
+export default function Feed () {
     const [feed, setFeed] = useState([]);
     const [page, setPage] = useState(1);
+    const [total, setTotal] = useState(0);
 
-    async function loadPage(pageNumber = page){
+    const LIMIT = 5;
+
+    async function loadPage (pageNumber = page) {
+
+        if(total && pageNumber > total) return;
+
         const response = await fetch(
-            `http://localhost:3000/feed?_expand=author&_limit=5&_page=${pageNumber}`
+            `http://localhost:3000/feed?_expand=author&_limit=${LIMIT}&_page=${pageNumber}`
         );
         const data = await response.json();
+        const totalItems = response.headers.get('X-Total-Count');
 
+        setTotal(Math.floor(totalItems / LIMIT))
         setFeed([...feed, ...data]);
         setPage(pageNumber + 1);
     }
 
-    useEffect(()=>{
+    useEffect(()=> {
         loadPage();
     }, []); 
 
