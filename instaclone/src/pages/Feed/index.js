@@ -16,6 +16,8 @@ export default function Feed() {
 
             setFeed(data);
         }
+
+        loadFeed();
     }, []); 
 
     return(
@@ -26,10 +28,15 @@ export default function Feed() {
                 renderItem={({ item })=> (
                     <Post>
                         <Header>
-                            <Avatar 
-                                source={{uri: item.author.avatar}}
-                            />
+                            <Avatar ratio={ item.aspectRatio } source={{ uri: item.author.avatar }}/>
+                            <Name> { item.author.name } </Name>
                         </Header>
+
+                        <PostImage ratio={ item.aspectRatio } source={{ uri: item.image }}/>
+
+                        <Description>
+                            <Name> { item.author.name } </Name> {item.description}
+                        </Description>
                     </Post>
                 )}
             />
