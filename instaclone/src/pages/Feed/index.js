@@ -10,10 +10,11 @@ export default function Feed () {
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
     const LIMIT = 5;
 
-    async function loadPage (pageNumber = page) {
+    async function loadPage (pageNumber = page, shouldRefresh = false) {
 
         if(total && pageNumber > total) return;
         
@@ -26,7 +27,7 @@ export default function Feed () {
         const totalItems = response.headers.get('X-Total-Count');
 
         setTotal(Math.floor(totalItems / LIMIT))
-        setFeed([...feed, ...data]);
+        setFeed(shouldRefresh? data : [...feed, ...data]);
         setPage(pageNumber + 1);
         setLoading(false);
     }
@@ -35,6 +36,14 @@ export default function Feed () {
         loadPage();
     }, []); 
 
+    async function refreshList () {
+        setRefreshing(true);
+
+        await loadPage(1, true);
+
+        setRefreshing(false);
+    }
+
     return(
         <View>
             <FlatList 
@@ -42,6 +51,8 @@ export default function Feed () {
                 keyExtractor={post => String(post.id)}
                 onEndReached={() => loadPage()}
                 onEndReachedThreshold={0.1}
+                onRefresh={refreshList}
+                refreshing={refreshing}
                 ListFooterComponent={loading && <Loading/>}
                 renderItem={({ item })=> (
                     <Post>
