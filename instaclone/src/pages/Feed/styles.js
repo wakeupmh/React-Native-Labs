@@ -32,3 +32,10 @@ export const PostImage = styled.Image `
     width:100%;
     aspect-ratio: ${props => props.ratio};
 `;
+
+export const Loading = styled.ActivityIndicator.attrs({
+    size: 'small',
+    color: '#999'
+})`
+    margin: 30px 0;
+`;
